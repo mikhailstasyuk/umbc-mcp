@@ -104,7 +104,31 @@ def test_chat_service_returns_chat_response_object(
         model="test-model",
     )
     assert isinstance(response, ChatResponse)
+    assert isinstance(response.message, str)
+    assert response.message == "ok"
     
+
+def test_chat_service_handles_none_message(
+        mock_service: ChatService,
+        mock_openai_client: OpenAI,
+        mocker: MockerFixture,
+)-> None:
+    mocker.patch.object(
+        mock_openai_client.chat.completions,
+        "create",
+        return_value=mocker.Mock(
+            choices=[mocker.Mock(message=mocker.Mock(content=None))]
+        )
+    )
+
+    response = mock_service.generate_response(
+        messages=[{"role": "user", "content": "Hi"}],
+        model="test-model",
+    )
+
+    assert isinstance(response, ChatResponse)
+    assert response.message is None
+
 
 def test_create_chat_request_valid():
     request = CreateChatRequest(
@@ -129,4 +153,3 @@ def test_chat_message_valid():
     assert isinstance(message, ChatMessage)
     assert message.role == "user"
     assert message.content == "Hi"
-    
