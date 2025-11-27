@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    pass
+    OPENAI_API_KEY: str | None = None
 
 
 @lru_cache
