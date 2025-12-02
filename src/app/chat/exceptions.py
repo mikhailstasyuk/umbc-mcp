@@ -33,3 +33,10 @@ class EmptyResponseError(ChatServiceError):
 
     def __init__(self, message: str = "OpenAI returned an empty response"):
         super().__init__(message=message, status_code=500)
+
+
+class ModelNotFoundError(ChatServiceError):
+    """Raised when the requested model does not exist."""
+
+    def __init__(self, message: str = "Model not found"):
+        super().__init__(message=message, status_code=404)

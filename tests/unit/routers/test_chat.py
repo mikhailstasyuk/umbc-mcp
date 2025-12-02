@@ -11,6 +11,7 @@ from src.app.chat.exceptions import (
     RateLimitExceededError,
     OpenAIConnectionError,
     EmptyResponseError,
+    ModelNotFoundError,
 )
 
 payload: dict[str, Any] = {
@@ -124,3 +125,18 @@ def test_chat_returns_503_on_missing_api_key(
 
     assert response.status_code == 503
     assert "OPENAI_API_KEY" in response.json()["detail"]
+
+
+def test_chat_returns_404_on_model_not_found(
+    client_with_error_service: TestClient,
+    mock_error_service: Mock,
+):
+    """Verify the router returns 404 when the model does not exist."""
+    mock_error_service.generate_response.side_effect = ModelNotFoundError(
+        message="Model not found: invalid-model"
+    )
+
+    response = client_with_error_service.post("/chat", json=payload)
+
+    assert response.status_code == 404
+    assert "model" in response.json()["detail"].lower()

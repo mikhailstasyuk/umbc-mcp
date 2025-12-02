@@ -1,4 +1,10 @@
-from openai import AuthenticationError, RateLimitError, APIConnectionError, OpenAI
+from openai import (
+    AuthenticationError,
+    RateLimitError,
+    APIConnectionError,
+    NotFoundError,
+    OpenAI,
+)
 from openai.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionUserMessageParam,
@@ -10,6 +16,7 @@ from src.app.chat.exceptions import (
     RateLimitExceededError,
     OpenAIConnectionError,
     EmptyResponseError,
+    ModelNotFoundError,
 )
 from src.app.chat.schemas import ChatResponse, CreateChatRequest
 
@@ -45,6 +52,8 @@ class ChatService:
             )
         except APIConnectionError:
             raise OpenAIConnectionError(message="Failed to connect to OpenAI API")
+        except NotFoundError as e:
+            raise ModelNotFoundError(message=f"Model not found: {e.message}")
 
         if not response.choices:
             raise EmptyResponseError(message="OpenAI returned an empty response")

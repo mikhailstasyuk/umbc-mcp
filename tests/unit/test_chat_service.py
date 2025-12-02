@@ -1,6 +1,12 @@
 import httpx
 import pytest
-from openai import AuthenticationError, RateLimitError, APIConnectionError, OpenAI
+from openai import (
+    AuthenticationError,
+    RateLimitError,
+    APIConnectionError,
+    NotFoundError,
+    OpenAI,
+)
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionMessage,
@@ -13,6 +19,7 @@ from src.app.chat.exceptions import (
     RateLimitExceededError,
     OpenAIConnectionError,
     EmptyResponseError,
+    ModelNotFoundError,
 )
 from src.app.chat.service import ChatService
 from src.app.chat.schemas import ChatMessage, CreateChatRequest, ChatResponse
@@ -280,3 +287,43 @@ def test_chat_service_handles_empty_choices(
 
     assert exc_info.value.status_code == 500
     assert "empty" in exc_info.value.message.lower()
+
+
+def test_chat_service_handles_model_not_found(
+    mock_service: ChatService,
+    mock_openai_client: OpenAI,
+    mocker: MockerFixture,
+):
+    """Service should raise ModelNotFoundError when model does not exist."""
+    mock_response = httpx.Response(
+        status_code=404,
+        request=httpx.Request("POST", "https://api.openai.com/v1/chat/completions"),
+    )
+    not_found_error = NotFoundError(
+        "The model `invalid-model` does not exist",
+        response=mock_response,
+        body={
+            "error": {
+                "message": "The model does not exist",
+                "type": "invalid_request_error",
+                "code": "model_not_found",
+            }
+        },
+    )
+
+    mocker.patch.object(
+        mock_openai_client.chat.completions,
+        "create",
+        side_effect=not_found_error,
+    )
+
+    chat_input = CreateChatRequest(
+        model="invalid-model",
+        messages=[ChatMessage(role="user", content="Hi")],
+    )
+
+    with pytest.raises(ModelNotFoundError) as exc_info:
+        mock_service.generate_response(chat_input)
+
+    assert exc_info.value.status_code == 404
+    assert "model" in exc_info.value.message.lower()
