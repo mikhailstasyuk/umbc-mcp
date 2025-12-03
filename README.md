@@ -9,7 +9,6 @@ A robust FastAPI-based chat service that integrates with OpenAI's API, designed 
 - **Comprehensive Error Handling**: Robust error handling for all OpenAI API scenarios
 - **Request Validation**: Input validation for message content and structure
 - **Stateless Design**: RESTful API without conversation persistence
-- **Production Ready**: Comprehensive testing, code quality tools, and monitoring integration
 
 ## Quick Start
 
@@ -130,22 +129,8 @@ The API returns appropriate HTTP status codes for different error scenarios:
 # Run all tests
 uv run pytest
 
-# Run with coverage
-uv run coverage run -m pytest
-uv run coverage xml
-
 # Run specific test file
 uv run pytest tests/unit/test_chat_service.py
-```
-
-### Code Quality
-
-```bash
-# Run pre-commit hooks
-pre-commit run --all-files
-
-# Run SonarQube analysis
-sonar-scanner
 ```
 
 ### Project Structure
@@ -176,21 +161,6 @@ tests/
 
 When running the application, visit `http://localhost:8000/docs` for interactive Swagger documentation.
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Write tests for your changes
-4. Ensure all tests pass: `uv run pytest`
-5. Run code quality checks: `pre-commit run --all-files`
-6. Commit your changes: `git commit -m "feat: add your feature"`
-7. Push to your branch: `git push origin feature/your-feature`
-8. Create a Pull Request
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For questions or issues, please open an issue on GitHub.
