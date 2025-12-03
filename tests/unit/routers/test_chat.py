@@ -140,3 +140,29 @@ def test_chat_returns_404_on_model_not_found(
 
     assert response.status_code == 404
     assert "model" in response.json()["detail"].lower()
+
+
+def test_chat_rejects_empty_messages(client_with_mock_service: TestClient):
+    """Verify the chat endpoint returns 422 when messages array is empty."""
+    empty_messages_payload: dict[str, Any] = {
+        "model": "test-model",
+        "messages": [],
+    }
+
+    response = client_with_mock_service.post("/chat", json=empty_messages_payload)
+
+    assert response.status_code == 422
+
+
+def test_chat_rejects_oversized_messages(client_with_mock_service: TestClient):
+    """Verify the chat endpoint returns 422 when message content exceeds max length."""
+    max_content_length = 10000
+    oversized_content = "x" * (max_content_length + 1)
+    oversized_payload: dict[str, Any] = {
+        "model": "test-model",
+        "messages": [{"role": "user", "content": oversized_content}],
+    }
+
+    response = client_with_mock_service.post("/chat", json=oversized_payload)
+
+    assert response.status_code == 422

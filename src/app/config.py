@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     CHAT_HISTORY_LIMIT: int = 20
     MAX_CHAT_ITERATIONS: int = 5
     RETRIEVAL_TOP_K: int = 10
+    MAX_MESSAGE_LENGTH: int = 10000
 
 
 @lru_cache
