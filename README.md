@@ -1,4 +1,4 @@
-# UMBC MCP - AI Chat Service
+# CONFLUENCE-RAG - AI Chat Service
 
 A robust FastAPI-based chat service that integrates with OpenAI's API, designed for information retrieval and synthesis tasks.
 
@@ -160,7 +160,3 @@ tests/
 ## API Documentation
 
 When running the application, visit `http://localhost:8000/docs` for interactive Swagger documentation.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
